@@ -10,39 +10,77 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="container">
-            <div class="hero-content">
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+
+<!-- Hero Section - Premium Enterprise Header -->
+<header class="hero hero-compact">
+    <div class="container">
+        <!-- Top Row: Badge + Title -->
+        <div class="hero-top">
+            <div class="hero-badge-group">
                 <div class="hero-badge">
                     <span class="pulse-dot"></span>
                     <span>22 Active Certifications</span>
                 </div>
                 <h1 class="hero-title">
-                    <span class="gradient-text">Certification</span> Portfolio
+                    <span class="gradient-text">Badge</span> Wallet
                 </h1>
-                <p class="hero-subtitle">
-                    Professional IT certifications across Cybersecurity, Cloud, DevOps, and Data Engineering
-                </p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" data-count="22">0</span>
-                        <span class="stat-label">Certifications</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" data-count="6">0</span>
-                        <span class="stat-label">Categories</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" data-count="8">0</span>
-                        <span class="stat-label">Providers</span>
-                    </div>
+            </div>
+            
+            <!-- Stats inline with title -->
+            <div class="hero-stats-compact">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="22">0</span>
+                    <span class="stat-label">CERTIFICATIONS</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="6">0</span>
+                    <span class="stat-label">CATEGORIES</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number" data-count="8">0</span>
+                    <span class="stat-label">PROVIDERS</span>
                 </div>
             </div>
         </div>
-    </header>
+
+        <!-- Bottom Row: Subtitle + Filter Chips (más juntos) -->
+        <div class="hero-bottom">
+            <p class="hero-subtitle">
+                Professional IT certifications across Cybersecurity, Cloud, DevOps, and Data Engineering
+            </p>
+            
+            <!-- Filter Chips moved here (más compactos) -->
+            <div class="filter-chips" id="category-filters">
+                <button class="chip active" data-category="all">
+                    All <span class="chip-count">22</span>
+                </button>
+                <button class="chip" data-category="cybersecurity">
+                    🔒 Cybersecurity <span class="chip-count">8</span>
+                </button>
+                <button class="chip" data-category="cloud">
+                    ☁️ Cloud <span class="chip-count">4</span>
+                </button>
+                <button class="chip" data-category="linux">
+                    🐧 Linux <span class="chip-count">5</span>
+                </button>
+                <button class="chip" data-category="python">
+                    🐍 Python <span class="chip-count">3</span>
+                </button>
+                <button class="chip" data-category="data">
+                    📊 Data <span class="chip-count">2</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
 
     <!-- Filter Section -->
     <section class="filters-section">
@@ -124,9 +162,9 @@
     <!-- Stats Dashboard -->
     <section class="dashboard-section">
         <div class="container">
-            <h2 class="section-title">Certification Analytics</h2>
+            <h2 class="section-title" data-aos="fade-up">Certification Analytics</h2>
             <div class="dashboard-grid">
-                <div class="dashboard-card">
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="card-header">
                         <h3>By Provider</h3>
                         <span class="card-icon">🏢</span>
@@ -136,7 +174,7 @@
                     </div>
                 </div>
                 
-                <div class="dashboard-card">
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="200">
                     <div class="card-header">
                         <h3>Recent Achievements</h3>
                         <span class="card-icon">🎯</span>
@@ -146,7 +184,7 @@
                     </div>
                 </div>
 
-                <div class="dashboard-card">
+                <div class="dashboard-card" data-aos="fade-up" data-aos-delay="300">
                     <div class="card-header">
                         <h3>Skill Coverage</h3>
                         <span class="card-icon">⚡</span>
@@ -189,6 +227,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="badges-data.js"></script>
     <script src="script.js"></script>
 </body>

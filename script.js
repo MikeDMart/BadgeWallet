@@ -1,11 +1,13 @@
 // ============================================
 // BADGESWALLET - Main JavaScript Logic
+// Enterprise Edition with Visual Effects
 // ============================================
 
 // === STATE MANAGEMENT ===
 let currentFilter = 'all';
 let currentView = 'grid';
 let currentSearch = '';
+let isDarkMode = true; // Default dark mode
 
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,6 +19,122 @@ function initializeApp() {
     renderBadges(badgesData);
     setupEventListeners();
     populateDashboard();
+    initTheme();
+    initParticles();
+    initAOS();
+    initParallaxEffect();
+    
+    console.log('🎓 BadgesWallet Enterprise loaded!');
+    console.log(`📊 Total certifications: ${badgesData.length}`);
+}
+
+// === THEME TOGGLE ===
+function initTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Check localStorage for saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        isDarkMode = false;
+        document.body.classList.add('light-mode');
+        themeToggle.innerHTML = '☀️';
+    }
+    
+    themeToggle.addEventListener('click', toggleTheme);
+}
+
+function toggleTheme() {
+    isDarkMode = !isDarkMode;
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    if (isDarkMode) {
+        document.body.classList.remove('light-mode');
+        themeToggle.innerHTML = '🌙';
+        localStorage.setItem('theme', 'dark');
+    } else {
+        document.body.classList.add('light-mode');
+        themeToggle.innerHTML = '☀️';
+        localStorage.setItem('theme', 'light');
+    }
+    
+    // Reinitialize AOS for smooth transition
+    AOS.refresh();
+}
+
+// === PARTICLES BACKGROUND ===
+function initParticles() {
+    const colors = isDarkMode ? 
+        ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981'] : 
+        ['#2563eb', '#7c3aed', '#0891b2', '#059669'];
+    
+    for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        
+        const size = Math.random() * 4 + 2;
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const duration = Math.random() * 15 + 10;
+        const delay = Math.random() * 5;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        
+        particle.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${left}%;
+            top: ${top}%;
+            background: ${color};
+            opacity: ${Math.random() * 0.15 + 0.05};
+            animation: float-particle ${duration}s linear ${delay}s infinite;
+        `;
+        
+        document.body.appendChild(particle);
+    }
+}
+
+// === AOS INITIALIZATION ===
+function initAOS() {
+    AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100,
+        easing: 'ease-in-out',
+        disable: window.innerWidth < 768
+    });
+}
+
+// === PARALLAX EFFECT ON CARDS ===
+function initParallaxEffect() {
+    const cards = document.querySelectorAll('.badge-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            if (window.innerWidth <= 768) return; // Disable on mobile
+            
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 25;
+            const rotateY = (centerX - x) / 25;
+            
+            const cardInner = card.querySelector('.card-inner');
+            if (!cardInner.style.transform.includes('rotateY(180deg)')) {
+                cardInner.style.transform = 
+                    `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            }
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            const cardInner = card.querySelector('.card-inner');
+            if (!cardInner.style.transform.includes('rotateY(180deg)')) {
+                cardInner.style.transform = '';
+            }
+        });
+    });
 }
 
 // === STATS ANIMATION ===
@@ -61,6 +179,11 @@ function setupEventListeners() {
     viewButtons.forEach(button => {
         button.addEventListener('click', handleViewToggle);
     });
+    
+    // Window resize
+    window.addEventListener('resize', debounce(() => {
+        AOS.refresh();
+    }, 250));
 }
 
 function handleSearch(e) {
@@ -72,9 +195,15 @@ function handleFilterClick(e) {
     const button = e.currentTarget;
     const category = button.getAttribute('data-category');
     
-    // Update active state
+    // Update active state with animation
     document.querySelectorAll('.chip').forEach(btn => btn.classList.remove('active'));
     button.classList.add('active');
+    
+    // Add scale animation
+    button.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        button.style.transform = '';
+    }, 200);
     
     currentFilter = category;
     filterAndRenderBadges();
@@ -138,19 +267,26 @@ function renderBadges(badges) {
     }
     
     noResults.style.display = 'none';
-    container.innerHTML = badges.map(badge => createBadgeCard(badge)).join('');
+    container.innerHTML = badges.map((badge, index) => createBadgeCard(badge, index)).join('');
+    
+    // Reinitialize parallax for new cards
+    initParallaxEffect();
 }
 
-function createBadgeCard(badge) {
+function createBadgeCard(badge, index) {
     const logoUrl = providerLogos[badge.logo] || providerLogos['python'];
+    const animationDelay = index * 0.05;
     
     return `
-        <div class="badge-card">
+        <div class="badge-card" data-aos="fade-up" data-aos-delay="${animationDelay * 1000}">
             <div class="card-inner">
                 <!-- FRONT -->
                 <div class="card-front">
                     <div class="card-provider">
-                        <img src="${logoUrl}" alt="${badge.provider}" />
+                        <img src="${logoUrl}" 
+                             alt="${badge.provider}" 
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/80?text=${badge.provider.charAt(0)}'" />
                     </div>
                     <h3 class="card-title">${badge.title}</h3>
                     <span class="card-type">${badge.type}</span>
@@ -201,9 +337,10 @@ function createBadgeCard(badge) {
 }
 
 function formatDate(dateString) {
+    if (!dateString) return 'N/A';
     const [year, month] = dateString.split('-');
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return `${months[parseInt(month) - 1]} ${year}`;
+    return month ? `${months[parseInt(month) - 1]} ${year}` : year;
 }
 
 // === DASHBOARD POPULATION ===
@@ -225,7 +362,7 @@ function populateProviderStats() {
         .slice(0, 5);
     
     const html = sortedProviders.map(([provider, count]) => `
-        <div class="provider-item">
+        <div class="provider-item" data-aos="fade-right" data-aos-delay="100">
             <span class="provider-name">${provider}</span>
             <span class="provider-count">${count}</span>
         </div>
@@ -239,8 +376,8 @@ function populateTimeline() {
         .sort((a, b) => b.issued.localeCompare(a.issued))
         .slice(0, 5);
     
-    const html = recent.map(badge => `
-        <div class="timeline-item">
+    const html = recent.map((badge, index) => `
+        <div class="timeline-item" data-aos="fade-left" data-aos-delay="${100 + index * 50}">
             <div class="timeline-date">${formatDate(badge.issued)}</div>
             <div class="timeline-content">
                 <div class="timeline-title">${badge.title}</div>
@@ -272,9 +409,9 @@ function populateSkillsChart() {
     const maxValue = Math.max(...Object.values(skillCategories));
     
     const html = Object.entries(skillCategories).map(([skill, count]) => {
-        const percentage = (count / maxValue) * 100;
+        const percentage = maxValue > 0 ? (count / maxValue) * 100 : 0;
         return `
-            <div class="skill-bar">
+            <div class="skill-bar" data-aos="fade-up" data-aos-delay="100">
                 <div class="skill-bar-header">
                     <span>${skill}</span>
                     <span>${count}</span>
@@ -302,7 +439,7 @@ function debounce(func, wait) {
     };
 }
 
-// Add smooth scroll
+// Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -315,6 +452,3 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
-
-console.log('🎓 BadgesWallet loaded successfully!');
-console.log(`📊 Total certifications: ${badgesData.length}`);
